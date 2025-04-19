@@ -1,0 +1,173 @@
+.sound-settings {
+  position: relative;
+}
+
+.sound-toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+  color: white;
+}
+
+.sound-toggle-button:hover {
+  transform: scale(1.1);
+}
+
+.sound-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  z-index: 100;
+  min-width: 200px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.sound-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sound-control-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sound-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.volume-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 5px;
+  border-radius: 5px;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background-color: var(--btn-bg-primary);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  background-color: var(--btn-bg-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.volume-slider:disabled {
+  opacity: 0.5;
+}
+
+.volume-value {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  width: 40px;
+  text-align: right;
+}
+
+.test-sound-button {
+  background-color: var(--btn-bg-secondary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.test-sound-button:hover:not(:disabled) {
+  background-color: var(--btn-bg-secondary);
+  filter: brightness(1.1);
+}
+
+.test-sound-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Click outside handler */
+.sound-panel::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .sound-toggle-button {
+    font-size: 1.3rem;
+  }
+
+  .sound-panel {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sound-toggle-button {
+    font-size: 1.2rem;
+  }
+
+  .sound-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px 12px 0 0;
+    min-width: unset;
+    width: 100%;
+    padding: 1.5rem;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

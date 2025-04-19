@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&display=swap");
+
+:root {
+  /* Main colors */
+  --h1-title: #fff;
+  --h2-color: #333;
+  --bg-color: #f0f0f0;
+  --nav-bg: #000;
+  --text-color: #333;
+  --p-color: #333;
+
+  /* Button colors */
+  --btn-bg-primary: #54ad24;
+  --btn-bg-secondary: #177eaa;
+  --btn-hover-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  --btn-text-color: #fff;
+
+  /* Form elements */
+  --input-bg: #c1c1c1;
+  --input-border-focus: #573d8b;
+
+  /* Card elements */
+  --card-bg: #fff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: rgba(0, 0, 0, 0.2);
+
+  /* Game elements */
+  --timer-bg-gradient: radial-gradient(circle, #ff4e50, #ff6e7f);
+  --counter-bg-gradient: radial-gradient(circle, #54ad24, #54ad24);
+
+  /* UI elements */
+  --tooltip-bg: #fff;
+  --tooltip-border: #ccc;
+  --warning-color: rgb(176, 176, 176);
+  --green-shadow: green;
+
+  /* Fonts */
+  --font-title: "Italiana", sans-serif;
+  --font-body: "Open Sans", sans-serif;
+  --font-secondary: "Oswald", sans-serif;
+}
+
+/* Dark mode variables */
+.dark-mode {
+  --h1-title: #fff;
+  --h2-color: #4e4e4e;
+  --bg-color: #181818;
+  --nav-bg: #222;
+  --text-color: #eee;
+  --p-color: #bfbfbf;
+  --btn-bg-primary: #357a1f;
+  --btn-bg-secondary: #125e8a;
+  --btn-hover-shadow: rgba(255, 255, 255, 0.25) 0 8px 15px;
+  --card-bg: #2a2a2a;
+  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-hover-shadow: rgba(255, 255, 255, 0.2);
+  --input-bg: #333;
+  --tooltip-bg: #333;
+  --tooltip-border: #555;
+  --warning-color: #ff6e6e;
+  --green-shadow: limegreen;
+}
+
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-title);
+  color: var(--h2-color);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Add Italiana font manually as fallback */
+@font-face {
+  font-family: "Italiana";
+  src: url("/fonts/Italiana-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

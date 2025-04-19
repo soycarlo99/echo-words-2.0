@@ -1,0 +1,108 @@
+.join-game-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.join-game-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.join-game-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.join-game-title h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+.join-game-instruction {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: var(--p-color);
+  margin-bottom: 3rem;
+}
+
+.highlight {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.info-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--btn-bg-secondary);
+  color: white;
+  font-style: italic;
+  text-align: center;
+  line-height: 20px;
+  margin-left: 8px;
+  font-size: 0.9rem;
+  cursor: help;
+}
+
+.join-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.connection-warning {
+  color: var(--warning-color);
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .join-game-title h2 {
+    font-size: 2rem;
+  }
+
+  .join-game-instruction {
+    font-size: 1.2rem;
+  }
+
+  .join-button-group {
+    flex-direction: column;
+  }
+
+  .join-button-group .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .join-game-title h2 {
+    font-size: 1.5rem;
+  }
+}

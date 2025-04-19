@@ -1,0 +1,129 @@
+.player-name-input-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.player-name-field {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  box-shadow: 0 0 15px rgba(255, 110, 127, 0.5);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.player-name-field:focus {
+  outline: none;
+  box-shadow: 0 0 20px rgba(255, 110, 127, 0.7);
+}
+
+.player-name-field.input-valid {
+  box-shadow: 0 0 20px rgba(2, 235, 3, 0.7);
+}
+
+.player-name-field.input-error {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+}
+
+.accept-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: var(--btn-bg-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.accept-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.accept-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.accept-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input-error-message {
+  color: #e74c3c;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+@keyframes shake-name {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake-name {
+  animation: shake-name 0.5s ease;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .input-group {
+    flex-direction: column;
+  }
+
+  .player-name-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .accept-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-name-field {
+    font-size: 1.2rem;
+  }
+
+  .accept-button {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+}

@@ -1,0 +1,143 @@
+.enter-lobby-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.enter-lobby-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.enter-lobby-container {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.instructions {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.instructions h2 {
+  font-size: 2.5rem;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+/* Pin code input styles */
+.pin-code-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  gap: 1rem;
+}
+
+.pin-input {
+  width: 5rem;
+  height: 6rem;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  background-color: var(--input-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem;
+  color: var(--text-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.pin-input:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+}
+
+.pin-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.join-button {
+  font-size: 1.5rem;
+  min-width: 200px;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid var(--btn-bg-secondary);
+  animation: spin 1s linear infinite;
+}
+
+.connection-warning {
+  color: var(--warning-color);
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pin-input {
+    width: 4rem;
+    height: 5rem;
+    font-size: 2.5rem;
+  }
+
+  .instructions h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pin-code-container {
+    gap: 0.5rem;
+  }
+
+  .pin-input {
+    width: 3rem;
+    height: 4rem;
+    font-size: 2rem;
+  }
+
+  .instructions h2 {
+    font-size: 1.5rem;
+  }
+
+  .join-button {
+    font-size: 1.2rem;
+    min-width: unset;
+    width: 100%;
+  }
+}

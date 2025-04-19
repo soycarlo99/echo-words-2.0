@@ -1,0 +1,141 @@
+.game-rules-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.rules-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.rules-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+#title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+.rules-text {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.rules-text h2 {
+  color: var(--text-color);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--btn-bg-primary);
+  padding-bottom: 0.5rem;
+}
+
+.rules-text h3 {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  margin: 2rem 0 1rem;
+}
+
+.rules-intro {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.rules-text ul,
+.rules-text ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+}
+
+.rules-text li {
+  margin-bottom: 0.8rem;
+}
+
+.rules-text ul ul,
+.rules-text ul ol {
+  margin-top: 0.8rem;
+  margin-bottom: 0;
+}
+
+.rules-text strong {
+  font-weight: 600;
+  color: var(--btn-bg-primary);
+}
+
+.rules-footer {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.rules-footer .button {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .rules-container {
+    padding: 1.5rem;
+  }
+
+  #title {
+    font-size: 2rem;
+  }
+
+  .rules-text {
+    font-size: 1rem;
+  }
+
+  .rules-text h2 {
+    font-size: 1.5rem;
+  }
+
+  .rules-text h3 {
+    font-size: 1.3rem;
+  }
+
+  .rules-intro {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rules-container {
+    padding: 1rem;
+  }
+
+  #title {
+    font-size: 1.5rem;
+  }
+
+  .rules-text h2 {
+    font-size: 1.3rem;
+  }
+
+  .rules-text h3 {
+    font-size: 1.1rem;
+  }
+
+  .rules-intro {
+    font-size: 1rem;
+  }
+
+  .rules-text li {
+    margin-bottom: 0.5rem;
+  }
+
+  .rules-footer .button {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+  }
+}

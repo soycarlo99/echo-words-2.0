@@ -1,0 +1,261 @@
+.word-card {
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+}
+
+.word-input {
+  width: 10ch;
+  padding: 0.75rem 1rem;
+  background-color: #ff9130;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 15px;
+  transition:
+    background-color 0.3s ease,
+    width 0.2s ease;
+  outline: none;
+}
+
+.word-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.word-input:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.word-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Notification for error messages */
+.notification {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Shake animation for incorrect input */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+    background-color: #ff9130;
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+    background-color: #e74c3c;
+  }
+}
+
+.shake {
+  animation: shake 0.5s ease;
+}
+
+/* Default success animation */
+@keyframes defaultAnimation {
+  0% {
+    background-color: #ff9130;
+  }
+  100% {
+    background-color: #2ecc71;
+  }
+}
+
+.default-animation {
+  animation: defaultAnimation 0.3s forwards;
+}
+
+/* Confetti burst animation */
+@keyframes confettiBurst {
+  0% {
+    background-color: #ff9130;
+    transform: scale(1);
+  }
+  20% {
+    background-color: #a5d6a7;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+  }
+  100% {
+    background-color: #388e3c;
+    transform: scale(1);
+    box-shadow: 0 0 50px rgba(76, 175, 80, 1);
+  }
+}
+
+.confetti-burst {
+  animation: confettiBurst 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Gradient wave animation */
+@keyframes gradientWave {
+  0% {
+    background-position: 0% 50%;
+    background-size: 100% 100%;
+  }
+  30% {
+    background-image: linear-gradient(
+      45deg,
+      #ff9130 0%,
+      #a5d6a7 25%,
+      #81c784 50%,
+      #4caf50 75%,
+      #388e3c 100%
+    );
+    background-size: 400% 400%;
+  }
+  100% {
+    background-color: #388e3c;
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-wave {
+  animation: gradientWave 1.5s ease-in-out forwards;
+}
+
+/* Liquid wave animation */
+@keyframes liquidWave {
+  0% {
+    background-position: 0% 50%;
+    transform: scale(1);
+  }
+  30% {
+    background-position: 100% 50%;
+    transform: scale(1.05);
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: scale(1);
+    background-color: #37bc9b;
+  }
+}
+
+.liquid-wave {
+  background: linear-gradient(120deg, #4a89dc, #48cfad, #37bc9b, #32b08d);
+  background-size: 300% 300%;
+  animation: liquidWave 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Neon glow animation */
+@keyframes neonGlow {
+  0% {
+    text-shadow:
+      0 0 5px #ff9130,
+      0 0 10px #ff9130;
+    background-color: #ff9130;
+  }
+  100% {
+    background-color: #388e3c;
+    text-shadow:
+      0 0 10px #4caf50,
+      0 0 20px #388e3c;
+  }
+}
+
+.neon-glow {
+  animation: neonGlow 1.3s ease-out forwards;
+}
+
+/* 3D flip animation */
+@keyframes flip3D {
+  0% {
+    transform: perspective(500px) rotateX(0deg);
+    background-color: #ff9130;
+  }
+  100% {
+    transform: perspective(500px) rotateX(360deg);
+    background-color: #388e3c;
+  }
+}
+
+.flip-3d {
+  animation: flip3D 1.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+/* Correct state */
+.word-input.correct {
+  background-color: #2ecc71;
+}
+
+/* Score popup animation */
+.score-popup {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #2ecc71;
+  font-size: 1.2em;
+  font-weight: bold;
+  animation: scorePopup 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes scorePopup {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .word-input {
+    font-size: 1.2rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .notification {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .word-input {
+    font-size: 1rem;
+    padding: 0.5rem 0.7rem;
+  }
+}

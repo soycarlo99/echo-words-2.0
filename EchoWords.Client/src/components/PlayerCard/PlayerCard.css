@@ -1,0 +1,152 @@
+.player-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--card-shadow);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  overflow: hidden;
+  width: 8rem;
+}
+
+.player-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px var(--card-hover-shadow);
+}
+
+.avatar-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.avatar-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px 8px 0 0;
+}
+
+.player-info {
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.player-name {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+  color: var(--text-color);
+  font-family: var(--font-body);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-score,
+.player-stat {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  margin-bottom: 0.3rem;
+  background-color: var(--counter-bg-gradient);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.randomize-button {
+  background-color: var(--btn-bg-secondary);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  outline: none;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.randomize-button:hover {
+  background-color: var(--btn-bg-secondary);
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.randomize-button:active {
+  transform: scale(1);
+}
+
+/* Highlighted player */
+.player-card.highlighted {
+  box-shadow: 0 0 10px 5px var(--green-shadow);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation for cards entering the DOM */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .player-card {
+    width: 7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-card {
+    width: 6rem;
+  }
+
+  .player-name {
+    font-size: 0.8rem;
+  }
+
+  .player-score,
+  .player-stat {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .randomize-button {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+}

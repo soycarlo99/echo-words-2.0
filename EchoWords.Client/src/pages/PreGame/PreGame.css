@@ -1,0 +1,156 @@
+.pregame-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pregame-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.pregame-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pregame-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pregame-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.instructions-text {
+  font-size: 1.5rem;
+  color: var(--p-color);
+}
+
+.highlight {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Card holder styles */
+.card-holder {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+/* Game controls */
+.game-controls {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.start-game-button {
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  min-width: 250px;
+}
+
+/* Loading and error states */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 4rem 0;
+  gap: 1.5rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--btn-bg-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--btn-bg-primary);
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 0.5rem;
+}
+
+.connection-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin: 1.5rem auto;
+  max-width: 400px;
+  color: var(--warning-color);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The avatar card animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pregame-header h2 {
+    font-size: 2rem;
+  }
+
+  .instructions-text {
+    font-size: 1.2rem;
+  }
+
+  .start-game-button {
+    font-size: 1.3rem;
+    padding: 0.8rem 2rem;
+    min-width: unset;
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pregame-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .instructions-text {
+    font-size: 1rem;
+  }
+
+  .card-holder {
+    gap: 1rem;
+  }
+}
