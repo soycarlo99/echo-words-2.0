@@ -14,6 +14,7 @@ const WordInput = ({
   onCorrect,
   onIncorrect,
   onAddNew,
+  onInputChange,
   disabled = false,
   autoFocus = false,
 }) => {
@@ -55,12 +56,10 @@ const WordInput = ({
     }
   }, [autoFocus, isDisabled]);
 
-  // Reset when expected changes
+  // Update disabled state when the disabled prop changes
   useEffect(() => {
-    if (!isCorrect) {
-      setInputValue("");
-    }
-  }, [expected, isCorrect]);
+    setIsDisabled(disabled);
+  }, [disabled]);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -81,6 +80,11 @@ const WordInput = ({
     // Clear any error message
     if (errorMessage) {
       setErrorMessage("");
+    }
+
+    // Notify parent component of the change
+    if (onInputChange) {
+      onInputChange(index, newValue);
     }
   };
 
@@ -199,8 +203,8 @@ const WordInput = ({
     // Typing speed bonus
     let speedMultiplier = 1;
     if (firstKeystrokeTime) {
-      const typingTime = (Date.now() - firstKeystrokeTime) / 1000;
-      const wordsPerMinute = word.length / 5 / (typingTime / 60);
+      const timeElapsed = (Date.now() - firstKeystrokeTime) / 1000;
+      const wordsPerMinute = word.length / 5 / (timeElapsed / 60);
       speedMultiplier = Math.min(wordsPerMinute / 30, 2);
     }
 
@@ -287,6 +291,11 @@ const WordInput = ({
       if (inputRef.current) {
         inputRef.current.focus();
       }
+
+      // Also notify parent of the change to empty string
+      if (onInputChange) {
+        onInputChange(index, "");
+      }
     }, 500);
   };
 
@@ -306,6 +315,11 @@ const WordInput = ({
       setAnimation(null);
       if (inputRef.current) {
         inputRef.current.focus();
+      }
+
+      // Also notify parent of the change to empty string
+      if (onInputChange) {
+        onInputChange(index, "");
       }
     }, 500);
   };
@@ -341,7 +355,7 @@ const WordInput = ({
         value={inputValue}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
-        disabled={isDisabled}
+        disabled={isDisabled || isCorrect}
         maxLength={20}
         autoComplete="off"
         spellCheck="false"

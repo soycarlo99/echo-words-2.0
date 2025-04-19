@@ -35,9 +35,11 @@ const GamePage = () => {
   const [isInputsDisabled, setIsInputsDisabled] = useState(false);
   const [isTurnPhase, setIsTurnPhase] = useState(true); // true = entering words, false = viewing results
   const [completedInputs, setCompletedInputs] = useState(0);
+  const [userInputs, setUserInputs] = useState({}); // Track all user inputs by index
 
   const timerIntervalRef = useRef(null);
   const previousWordListLengthRef = useRef(0);
+  const username = localStorage.getItem("username");
 
   // Connect to SignalR and fetch initial data
   useEffect(() => {
@@ -111,6 +113,14 @@ const GamePage = () => {
       }
     };
 
+    // Handle user input updates
+    const receiveUserInputHandler = (index, input) => {
+      setUserInputs((prev) => ({
+        ...prev,
+        [index]: input,
+      }));
+    };
+
     // Handle timer events
     const receiveTimerStartHandler = (initialTime) => {
       setGameState((prev) => ({ ...prev, remainingSeconds: initialTime }));
@@ -147,6 +157,10 @@ const GamePage = () => {
       "ReceiveGameState",
       receiveGameStateHandler,
     );
+    const unsubscribeUserInput = on(
+      "ReceiveUserInput",
+      receiveUserInputHandler,
+    );
     const unsubscribeTimerStart = on(
       "ReceiveTimerStart",
       receiveTimerStartHandler,
@@ -171,6 +185,7 @@ const GamePage = () => {
     // Cleanup function to unsubscribe from all events
     return () => {
       unsubscribeGameState();
+      unsubscribeUserInput();
       unsubscribeTimerStart();
       unsubscribeTimerSync();
       unsubscribeTimerPause();
@@ -179,9 +194,24 @@ const GamePage = () => {
     };
   }, [on, isConnected, gameState.wordList.length]);
 
+  // Update input values from received broadcasts
+  useEffect(() => {
+    // Update input values from userInputs state
+    const inputs = document.querySelectorAll(".word-input");
+
+    Object.entries(userInputs).forEach(([index, value]) => {
+      const inputIndex = parseInt(index);
+      if (inputs[inputIndex]) {
+        // Only update if it's not the current player's turn or not the current input
+        if (!isMyTurn() || inputIndex !== completedInputs) {
+          inputs[inputIndex].value = value;
+        }
+      }
+    });
+  }, [userInputs]);
+
   // Update inputs when it's this player's turn
   const updateInputsForPlayer = (wordList, playerIndex) => {
-    const username = localStorage.getItem("username");
     if (!username || !players.length) return;
 
     // Find our player index
@@ -192,10 +222,10 @@ const GamePage = () => {
     if (myPlayerIndex === -1) return;
 
     // Check if it's our turn
-    const isMyTurn = playerIndex % players.length === myPlayerIndex;
+    const isMyTurnNow = playerIndex % players.length === myPlayerIndex;
 
     // If it's our turn, we need to generate inputs for all words so far + a new one
-    if (isMyTurn && isTurnPhase) {
+    if (isMyTurnNow && isTurnPhase) {
       // Generate inputs for all words in the list + a new one
       const newInputs = wordList.map((word, idx) => ({
         index: idx,
@@ -213,6 +243,34 @@ const GamePage = () => {
       setCurrentInputs(newInputs);
       setCompletedInputs(0);
       setIsInputsDisabled(false);
+    } else {
+      // Even if it's not our turn, we should still display all the inputs
+      // but they'll be disabled
+      const allInputs = wordList.map((word, idx) => ({
+        index: idx,
+        isExisting: true,
+        expected: word,
+      }));
+
+      // Add the input for the next player
+      if (isTurnPhase) {
+        allInputs.push({
+          index: wordList.length,
+          isExisting: false,
+          expected: "",
+        });
+      }
+
+      setCurrentInputs(allInputs);
+    }
+  };
+
+  // Broadcast user input to other players
+  const broadcastUserInput = (index, value) => {
+    if (isConnected) {
+      invoke("BroadcastUserInput", lobbyId, index, value).catch((err) =>
+        console.error("Error broadcasting user input:", err),
+      );
     }
   };
 
@@ -329,6 +387,18 @@ const GamePage = () => {
     }
   };
 
+  // Handle when user input changes
+  const handleInputChange = (index, value) => {
+    // Update local state
+    setUserInputs((prev) => ({
+      ...prev,
+      [index]: value,
+    }));
+
+    // Broadcast to other players
+    broadcastUserInput(index, value);
+  };
+
   // Handle when a new word is added
   const handleAddNewWord = async (word, score) => {
     // Add score to current player
@@ -358,6 +428,9 @@ const GamePage = () => {
 
     // Add time bonus for new word
     addTimeBonus(false);
+
+    // Clear user input state for next turn
+    setUserInputs({});
 
     // Broadcast game state update
     try {
@@ -501,7 +574,6 @@ const GamePage = () => {
 
   // Check if it's our turn
   const isMyTurn = () => {
-    const username = localStorage.getItem("username");
     if (!username || !players.length) return false;
 
     const myPlayerIndex = players.findIndex(
@@ -557,6 +629,7 @@ const GamePage = () => {
                       players={players}
                       lobbyId={lobbyId}
                       onAddNew={handleAddNewWord}
+                      onInputChange={handleInputChange}
                       autoFocus={true}
                     />
                   </div>
@@ -566,6 +639,19 @@ const GamePage = () => {
                     <p>
                       Waiting for {players[0]?.username} to start the game...
                     </p>
+                    {/* Show inputs but disabled */}
+                    <WordInput
+                      key="first-word-waiting"
+                      index={0}
+                      isExisting={false}
+                      expected=""
+                      gameState={gameState}
+                      setGameState={setGameState}
+                      players={players}
+                      lobbyId={lobbyId}
+                      onInputChange={handleInputChange}
+                      disabled={true}
+                    />
                   </div>
                 ) : !isMyTurn() ? (
                   // Not our turn - show whose turn it is
@@ -573,6 +659,23 @@ const GamePage = () => {
                     <p>
                       It's {players[currentPlayerIndex]?.username}'s turn...
                     </p>
+
+                    {/* Display all existing inputs (disabled) */}
+                    {currentInputs.map((input, idx) => (
+                      <WordInput
+                        key={`input-view-${idx}`}
+                        index={input.index}
+                        isExisting={input.isExisting}
+                        expected={input.expected}
+                        gameState={gameState}
+                        setGameState={setGameState}
+                        players={players}
+                        lobbyId={lobbyId}
+                        onInputChange={handleInputChange}
+                        disabled={true}
+                      />
+                    ))}
+
                     {!isTurnPhase && gameState.wordList.length > 0 && (
                       <div className="last-word-display">
                         <p>
@@ -604,6 +707,7 @@ const GamePage = () => {
                           onCorrect={handleCorrectWord}
                           onIncorrect={handleIncorrectWord}
                           onAddNew={handleAddNewWord}
+                          onInputChange={handleInputChange}
                           disabled={
                             isInputsDisabled ||
                             (input.isExisting && idx > completedInputs)
