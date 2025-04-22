@@ -44,7 +44,7 @@ const Home = ({ onUsernameSet }) => {
 
     try {
       // Send username to server
-      const response = await fetch("/new-player/", {
+      const response = await fetch("/api/new-player/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ word: trimmedName }),

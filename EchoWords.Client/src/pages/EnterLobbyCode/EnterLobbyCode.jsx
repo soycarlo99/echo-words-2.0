@@ -71,7 +71,7 @@ const EnterLobbyCode = () => {
 
     try {
       // Update player's lobby on the server
-      const updateResponse = await fetch("/update-player-lobby", {
+      const updateResponse = await fetch("/api/update-player-lobby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

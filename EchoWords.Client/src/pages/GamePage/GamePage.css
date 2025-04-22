@@ -48,24 +48,119 @@
   font-weight: 500;
 }
 
+.word-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.word-card {
+  background-color: var(--card-bg);
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  width: 100%;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.word-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.word-card.correct {
+  background-color: var(--success-bg);
+  border: 2px solid var(--success-border);
+}
+
+.word-card input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.word-card input:focus {
+  outline: none;
+  border-color: var(--btn-bg-primary);
+  box-shadow: 0 0 0 2px var(--btn-bg-primary-alpha);
+}
+
+.word-card input:disabled {
+  background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  cursor: not-allowed;
+}
+
+.word-card .notification {
+  position: absolute;
+  bottom: -1.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--error-color);
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .last-word-display {
   background-color: var(--card-bg);
   padding: 1rem 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 12px var(--card-shadow);
-  margin: 1rem 0;
+  margin: 1rem auto;
   text-align: center;
   animation: fadeInScale 0.5s ease-out;
+  max-width: 400px;
+  border: 2px solid var(--btn-bg-primary);
 }
 
 .last-word-display p {
   font-size: 1.2rem;
   color: var(--text-color);
+  margin: 0;
 }
 
 .last-word-display strong {
   font-size: 1.4rem;
   color: var(--btn-bg-primary);
+  font-weight: bold;
+  display: inline-block;
+  margin-left: 0.5rem;
+  animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .players-container {

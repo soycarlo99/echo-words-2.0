@@ -27,7 +27,7 @@ const PreGame = () => {
         }
 
         // Fetch initial player list
-        const response = await fetch(`/lobby/${lobbyId}/players`);
+        const response = await fetch(`/api/lobby/${lobbyId}/players`);
         if (!response.ok) {
           throw new Error(`Failed to fetch players: ${response.statusText}`);
         }

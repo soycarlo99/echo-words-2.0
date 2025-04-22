@@ -82,7 +82,7 @@ app.MapControllers();
 
 // Add new word
 app.MapPost(
-    "/new-word",
+    "/api/new-word",
     async (HttpContext context, GameService gameService) =>
     {
         var requestBody = await context.Request.ReadFromJsonAsync<WordRequest>();
@@ -106,7 +106,7 @@ app.MapPost(
 
 // Add new player
 app.MapPost(
-    "/new-player",
+    "/api/new-player",
     async (HttpContext context, GameService gameService) =>
     {
         var requestBody = await context.Request.ReadFromJsonAsync<WordRequest>();
@@ -127,7 +127,7 @@ app.MapPost(
 
 // Create new lobby
 app.MapPost(
-    "/create-lobby",
+    "/api/create-lobby",
     () =>
     {
         string lobbyId = LobbyManager.GenerateLobbyCode();
@@ -138,7 +138,7 @@ app.MapPost(
 
 // Get players in a lobby
 app.MapGet(
-    "/lobby/{lobbyId}/players",
+    "/api/lobby/{lobbyId}/players",
     async (string lobbyId, GameService gameService) =>
     {
         var players = await gameService.GetPlayersByLobbyAsync(lobbyId);
@@ -148,7 +148,7 @@ app.MapGet(
 
 // Update player's lobby
 app.MapPost(
-    "/update-player-lobby",
+    "/api/update-player-lobby",
     async (HttpContext context, GameService gameService) =>
     {
         var requestBody = await context.Request.ReadFromJsonAsync<WordRequest>();
@@ -172,7 +172,7 @@ app.MapPost(
 
 // Submit match results
 app.MapPost(
-    "/lobby/{lobbyId}/submit-results",
+    "/api/lobby/{lobbyId}/submit-results",
     async (string lobbyId, HttpContext context, GameService gameService) =>
     {
         try
@@ -194,7 +194,7 @@ app.MapPost(
 
 // Get match results
 app.MapGet(
-    "/lobby/{lobbyId}/results",
+    "/api/lobby/{lobbyId}/results",
     async (string lobbyId, GameService gameService) =>
     {
         try

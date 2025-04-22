@@ -13,7 +13,7 @@ const JoinGame = () => {
     setIsCreatingLobby(true);
 
     try {
-      const response = await fetch("/create-lobby", {
+      const response = await fetch("/api/create-lobby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -38,7 +38,7 @@ const JoinGame = () => {
 
   const updatePlayerLobby = async (lobbyId) => {
     try {
-      const response = await fetch("/update-player-lobby", {
+      const response = await fetch("/api/update-player-lobby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

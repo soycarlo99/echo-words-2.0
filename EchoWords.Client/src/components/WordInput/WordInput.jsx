@@ -51,18 +51,43 @@ const WordInput = ({
 
   // Auto-focus when needed
   useEffect(() => {
-    if (autoFocus && inputRef.current && !isDisabled) {
+    if (autoFocus && inputRef.current && !disabled) {
       inputRef.current.focus();
     }
-  }, [autoFocus, isDisabled]);
+  }, [autoFocus, disabled]);
 
   // Update disabled state when the disabled prop changes
   useEffect(() => {
     setIsDisabled(disabled);
   }, [disabled]);
 
+  // Listen for input updates from other players
+  useEffect(() => {
+    if (!isDisabled) return; // Only listen if this input is disabled (we're not the current player)
+
+    const unsubscribeInput = on("ReceiveUserInput", (receivedIndex, value) => {
+      if (receivedIndex === index) {
+        // Only update the input value if this is the current active input box
+        // This prevents showing the expected words in other boxes
+        if (gameState.wordList.length === index || !isExisting) {
+          setInputValue(value);
+          // Adjust input width for received value
+          if (inputRef.current) {
+            inputRef.current.style.width = `${Math.max(value.length, 10)}ch`;
+          }
+        }
+      }
+    });
+
+    return () => {
+      unsubscribeInput();
+    };
+  }, [on, index, isDisabled, gameState.wordList.length, isExisting]);
+
   // Handle input change
   const handleInputChange = (e) => {
+    if (isDisabled) return;
+
     const newValue = e.target.value;
 
     // Record first keystroke time for scoring
@@ -82,9 +107,15 @@ const WordInput = ({
       setErrorMessage("");
     }
 
-    // Notify parent component of the change
+    // Broadcast input change to all players
     if (onInputChange) {
       onInputChange(index, newValue);
+      // Only broadcast if this is the current active input box
+      if (gameState.wordList.length === index || !isExisting) {
+        invoke("BroadcastUserInput", lobbyId, index, newValue).catch((err) =>
+          console.error("Error broadcasting input:", err),
+        );
+      }
     }
   };
 
@@ -104,23 +135,30 @@ const WordInput = ({
       return;
     }
 
-    // Case 1: Existing word - check if it matches the expected word
+    // Case 1: Existing word - check if it matches the expected word exactly
     if (isExisting) {
-      if (trimmedInput === expected.toLowerCase()) {
+      const expectedLower = expected.toLowerCase();
+      if (trimmedInput === expectedLower) {
         markAsCorrect();
         if (onCorrect) onCorrect(index);
       } else {
+        setErrorMessage(`Please type "${expected}" exactly as shown.`);
         showIncorrectAnimation();
         if (onIncorrect) onIncorrect(index);
       }
       return;
     }
 
-    // Case 2: New word - validate it
-    if (isValidNewWord(trimmedInput)) {
-      if (onAddNew) onAddNew(trimmedInput, calculateWordScore(trimmedInput));
-      markAsCorrect();
+    // Case 2: New word - only validate if all previous words have been correctly retyped
+    if (index === gameState.wordList.length) {
+      if (isValidNewWord(trimmedInput)) {
+        if (onAddNew) onAddNew(trimmedInput, calculateWordScore(trimmedInput));
+        markAsCorrect();
+      } else {
+        showInvalidAnimation();
+      }
     } else {
+      setErrorMessage("You must correctly retype all previous words first.");
       showInvalidAnimation();
     }
   };
@@ -128,8 +166,9 @@ const WordInput = ({
   // Validate a new word
   const isValidNewWord = (word) => {
     // Check if the word starts with the last letter of the previous word
-    if (gameState.lastWord) {
-      const lastLetter = gameState.lastWord.slice(-1).toLowerCase();
+    if (gameState.wordList.length > 0) {
+      const lastWord = gameState.wordList[gameState.wordList.length - 1];
+      const lastLetter = lastWord.slice(-1).toLowerCase();
       const firstLetter = word.charAt(0).toLowerCase();
 
       if (firstLetter !== lastLetter) {
@@ -350,12 +389,14 @@ const WordInput = ({
         type="text"
         className={`word-input ${animation || ""} ${isCorrect ? "correct" : ""}`}
         placeholder={
-          isExisting ? `Re-enter "${expected}"...` : "Enter new word..."
+          isExisting 
+            ? "Re-enter previous word..."
+            : "Enter new word..."
         }
-        value={inputValue}
+        value={isDisabled && isExisting && index < gameState.wordList.length ? "" : inputValue}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
-        disabled={isDisabled || isCorrect}
+        disabled={disabled || isCorrect}
         maxLength={20}
         autoComplete="off"
         spellCheck="false"

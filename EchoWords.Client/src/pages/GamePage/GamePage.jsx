@@ -53,7 +53,7 @@ const GamePage = () => {
         }
 
         // Fetch players
-        const response = await fetch(`/lobby/${lobbyId}/players`);
+        const response = await fetch(`/api/lobby/${lobbyId}/players`);
         if (!response.ok) {
           throw new Error(`Failed to fetch players: ${response.statusText}`);
         }
@@ -224,44 +224,30 @@ const GamePage = () => {
     // Check if it's our turn
     const isMyTurnNow = playerIndex % players.length === myPlayerIndex;
 
-    // If it's our turn, we need to generate inputs for all words so far + a new one
-    if (isMyTurnNow && isTurnPhase) {
-      // Generate inputs for all words in the list + a new one
-      const newInputs = wordList.map((word, idx) => ({
-        index: idx,
-        isExisting: true,
-        expected: word,
-      }));
+    // Generate inputs for all existing words that need to be retyped
+    const newInputs = wordList.map((word, idx) => ({
+      index: idx,
+      isExisting: true,
+      expected: word,
+      disabled: !isMyTurnNow || idx !== completedInputs, // Only enable the current input
+    }));
 
-      // Add an input for the new word
+    // Add an input for the new word
+    if (isTurnPhase) {
       newInputs.push({
         index: wordList.length,
         isExisting: false,
         expected: "",
+        disabled: !isMyTurnNow || completedInputs < wordList.length, // Enable only after all words are retyped
       });
+    }
 
-      setCurrentInputs(newInputs);
-      setCompletedInputs(0);
+    setCurrentInputs(newInputs);
+    
+    if (isMyTurnNow) {
       setIsInputsDisabled(false);
     } else {
-      // Even if it's not our turn, we should still display all the inputs
-      // but they'll be disabled
-      const allInputs = wordList.map((word, idx) => ({
-        index: idx,
-        isExisting: true,
-        expected: word,
-      }));
-
-      // Add the input for the next player
-      if (isTurnPhase) {
-        allInputs.push({
-          index: wordList.length,
-          isExisting: false,
-          expected: "",
-        });
-      }
-
-      setCurrentInputs(allInputs);
+      setIsInputsDisabled(true);
     }
   };
 
@@ -335,6 +321,11 @@ const GamePage = () => {
       correctWordBonus: settings.correctWordBonus,
       rewriteWordBonus: settings.rewriteWordBonus,
     }));
+
+    // Broadcast timer start
+    invoke("BroadcastTimerStart", lobbyId, settings.initialTime).catch(
+      (err) => console.error("Error broadcasting timer start:", err),
+    );
   };
 
   // Get difficulty settings
@@ -367,24 +358,43 @@ const GamePage = () => {
     // Update completed inputs
     setCompletedInputs((prev) => prev + 1);
 
-    // If all previously entered words are done, focus the new word input
-    if (completedInputs + 1 === gameState.wordList.length) {
-      // Focus the last input (new word)
-      setTimeout(() => {
-        const inputs = document.querySelectorAll(".word-input");
-        if (inputs.length > completedInputs + 1) {
-          inputs[completedInputs + 1].focus();
-        }
-      }, 100);
-    } else {
-      // Focus the next existing word
-      setTimeout(() => {
-        const inputs = document.querySelectorAll(".word-input");
-        if (inputs.length > completedInputs + 1) {
-          inputs[completedInputs + 1].focus();
-        }
-      }, 100);
-    }
+    // Update input states to enable the next one
+    setCurrentInputs((prev) =>
+      prev.map((input, idx) => ({
+        ...input,
+        disabled: idx !== completedInputs + 1,
+      }))
+    );
+
+    // Focus the next input
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(".word-input");
+      if (inputs.length > completedInputs + 1) {
+        inputs[completedInputs + 1].focus();
+      }
+    }, 100);
+  };
+
+  // Handle incorrect word entry
+  const handleIncorrectWord = (index) => {
+    // Reset our progress if we get something wrong
+    setCompletedInputs(0);
+
+    // Reset input states to only enable the first one
+    setCurrentInputs((prev) =>
+      prev.map((input, idx) => ({
+        ...input,
+        disabled: idx !== 0,
+      }))
+    );
+
+    // Focus the first input
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(".word-input");
+      if (inputs.length > 0) {
+        inputs[0].focus();
+      }
+    }, 100);
   };
 
   // Handle when user input changes
@@ -404,11 +414,17 @@ const GamePage = () => {
     // Add score to current player
     const currentPlayer = gameState.currentPlayerIndex % players.length;
 
+    // Get the initial time based on difficulty
+    const difficulty = localStorage.getItem("gameDifficulty") || "medium";
+    const settings = getDifficultySettings(difficulty);
+    const initialTime = settings.initialTime;
+
     // Update game state
     const newGameState = {
       wordList: [...gameState.wordList, word],
       lastWord: word,
       currentPlayerIndex: gameState.currentPlayerIndex + 1,
+      remainingSeconds: initialTime, // Reset timer for next player
       scores: {
         ...gameState.scores,
         [currentPlayer]: (gameState.scores[currentPlayer] || 0) + score,
@@ -417,7 +433,7 @@ const GamePage = () => {
 
     // Save word to server
     try {
-      await fetch("/new-word/", {
+      await fetch("/api/new-word/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ word }),
@@ -426,11 +442,9 @@ const GamePage = () => {
       console.error("Error saving word:", error);
     }
 
-    // Add time bonus for new word
-    addTimeBonus(false);
-
     // Clear user input state for next turn
     setUserInputs({});
+    setCompletedInputs(0);
 
     // Broadcast game state update
     try {
@@ -438,12 +452,6 @@ const GamePage = () => {
     } catch (error) {
       console.error("Error broadcasting game state:", error);
     }
-
-    // Update local state
-    setGameState((prev) => ({
-      ...prev,
-      ...newGameState,
-    }));
 
     // Pause briefly to show the word, then disable inputs during pause
     setIsInputsDisabled(true);
@@ -454,7 +462,11 @@ const GamePage = () => {
 
     // Wait a bit to show the new word
     setTimeout(() => {
-      // Resume timer
+      // Resume timer with reset time
+      setGameState((prev) => ({
+        ...prev,
+        ...newGameState
+      }));
       resumeTimer();
 
       // Switch to next player's turn
@@ -466,20 +478,6 @@ const GamePage = () => {
         newGameState.currentPlayerIndex,
       );
     }, 1700); // Pause to show the new word
-  };
-
-  // Handle incorrect word entry
-  const handleIncorrectWord = (index) => {
-    // Reset our progress if we get something wrong
-    setCompletedInputs(0);
-
-    // Re-enable all previous inputs
-    setCurrentInputs((prev) =>
-      prev.map((input) => ({
-        ...input,
-        disabled: false,
-      })),
-    );
   };
 
   // Add time bonus
@@ -520,7 +518,7 @@ const GamePage = () => {
     setIsTimerPaused(false);
     startTimerWithoutBroadcast();
 
-    // Broadcast resume
+    // Broadcast resume with current time
     invoke("BroadcastTimerResume", lobbyId, gameState.remainingSeconds).catch(
       (err) => console.error("Error broadcasting timer resume:", err),
     );
@@ -531,7 +529,7 @@ const GamePage = () => {
     try {
       const results = calculateGameResults();
 
-      const response = await fetch(`/lobby/${lobbyId}/submit-results`, {
+      const response = await fetch(`/api/lobby/${lobbyId}/submit-results`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(results),
@@ -630,6 +628,7 @@ const GamePage = () => {
                       lobbyId={lobbyId}
                       onAddNew={handleAddNewWord}
                       onInputChange={handleInputChange}
+                      disabled={false}
                       autoFocus={true}
                     />
                   </div>
@@ -639,7 +638,6 @@ const GamePage = () => {
                     <p>
                       Waiting for {players[0]?.username} to start the game...
                     </p>
-                    {/* Show inputs but disabled */}
                     <WordInput
                       key="first-word-waiting"
                       index={0}
@@ -653,7 +651,63 @@ const GamePage = () => {
                       disabled={true}
                     />
                   </div>
-                ) : !isMyTurn() ? (
+                ) : isMyTurn() ? (
+                  // Our turn - show inputs
+                  <div className="my-turn">
+                    <p className="turn-instruction">
+                      {isTurnPhase
+                        ? "Your turn! Re-enter all previous words, then add a new one."
+                        : "Great job! Next player's turn coming up..."}
+                    </p>
+
+                    <div className="word-input-container">
+                      {/* Input for retyping previous words */}
+                      {gameState.wordList.map((word, idx) => (
+                        <WordInput
+                          key={`retype-${idx}`}
+                          index={idx}
+                          isExisting={true}
+                          expected={word}
+                          gameState={gameState}
+                          setGameState={setGameState}
+                          players={players}
+                          lobbyId={lobbyId}
+                          onCorrect={handleCorrectWord}
+                          onIncorrect={handleIncorrectWord}
+                          onInputChange={handleInputChange}
+                          disabled={idx !== completedInputs}
+                          autoFocus={idx === completedInputs}
+                        />
+                      ))}
+
+                      {/* Input for new word */}
+                      {isTurnPhase && (
+                        <WordInput
+                          key="new-word"
+                          index={gameState.wordList.length}
+                          isExisting={false}
+                          expected=""
+                          gameState={gameState}
+                          setGameState={setGameState}
+                          players={players}
+                          lobbyId={lobbyId}
+                          onAddNew={handleAddNewWord}
+                          onInputChange={handleInputChange}
+                          disabled={completedInputs < gameState.wordList.length}
+                          autoFocus={completedInputs === gameState.wordList.length}
+                        />
+                      )}
+                    </div>
+
+                    {!isTurnPhase && gameState.lastWord && (
+                      <div className="last-word-display">
+                        <p>
+                          You added: <strong>{gameState.lastWord}</strong>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   // Not our turn - show whose turn it is
                   <div className="waiting-turn">
                     <p>
@@ -664,9 +718,9 @@ const GamePage = () => {
                     {currentInputs.map((input, idx) => (
                       <WordInput
                         key={`input-view-${idx}`}
-                        index={input.index}
-                        isExisting={input.isExisting}
-                        expected={input.expected}
+                        index={idx}
+                        isExisting={idx < gameState.wordList.length}
+                        expected={gameState.wordList[idx] || ""}
                         gameState={gameState}
                         setGameState={setGameState}
                         players={players}
@@ -676,50 +730,10 @@ const GamePage = () => {
                       />
                     ))}
 
-                    {!isTurnPhase && gameState.wordList.length > 0 && (
+                    {!isTurnPhase && gameState.lastWord && (
                       <div className="last-word-display">
                         <p>
                           Last word added: <strong>{gameState.lastWord}</strong>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  // Our turn - show inputs
-                  <div className="my-turn">
-                    <p className="turn-instruction">
-                      {isTurnPhase
-                        ? "Your turn! Re-enter all previous words, then add a new one."
-                        : "Great job! Next player's turn coming up..."}
-                    </p>
-
-                    {isTurnPhase &&
-                      currentInputs.map((input, idx) => (
-                        <WordInput
-                          key={`input-${idx}`}
-                          index={input.index}
-                          isExisting={input.isExisting}
-                          expected={input.expected}
-                          gameState={gameState}
-                          setGameState={setGameState}
-                          players={players}
-                          lobbyId={lobbyId}
-                          onCorrect={handleCorrectWord}
-                          onIncorrect={handleIncorrectWord}
-                          onAddNew={handleAddNewWord}
-                          onInputChange={handleInputChange}
-                          disabled={
-                            isInputsDisabled ||
-                            (input.isExisting && idx > completedInputs)
-                          }
-                          autoFocus={idx === completedInputs}
-                        />
-                      ))}
-
-                    {!isTurnPhase && gameState.wordList.length > 0 && (
-                      <div className="last-word-display">
-                        <p>
-                          You added: <strong>{gameState.lastWord}</strong>
                         </p>
                       </div>
                     )}

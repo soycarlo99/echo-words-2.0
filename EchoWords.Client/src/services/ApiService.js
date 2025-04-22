@@ -10,7 +10,7 @@ class ApiService {
    */
   async createPlayer(username, lobbyId = null) {
     try {
-      const response = await fetch("/new-player/", {
+      const response = await fetch("/api/new-player/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -42,7 +42,7 @@ class ApiService {
    */
   async createLobby() {
     try {
-      const response = await fetch("/create-lobby", {
+      const response = await fetch("/api/create-lobby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -75,7 +75,7 @@ class ApiService {
    */
   async updatePlayerLobby(lobbyId) {
     try {
-      const response = await fetch("/update-player-lobby", {
+      const response = await fetch("/api/update-player-lobby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -106,7 +106,7 @@ class ApiService {
    */
   async getLobbyPlayers(lobbyId) {
     try {
-      const response = await fetch(`/lobby/${lobbyId}/players`);
+      const response = await fetch(`/api/lobby/${lobbyId}/players`);
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
@@ -135,7 +135,7 @@ class ApiService {
    */
   async submitWord(word) {
     try {
-      const response = await fetch("/new-word/", {
+      const response = await fetch("/api/new-word/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ word }),
@@ -166,7 +166,7 @@ class ApiService {
    */
   async submitMatchResults(lobbyId, results) {
     try {
-      const response = await fetch(`/lobby/${lobbyId}/submit-results`, {
+      const response = await fetch(`/api/lobby/${lobbyId}/submit-results`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(results),
@@ -196,7 +196,7 @@ class ApiService {
    */
   async getMatchResults(lobbyId) {
     try {
-      const response = await fetch(`/lobby/${lobbyId}/results`);
+      const response = await fetch(`/api/lobby/${lobbyId}/results`);
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);

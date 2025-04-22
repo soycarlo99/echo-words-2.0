@@ -25,7 +25,7 @@ const MatchResults = () => {
           await joinLobby(lobbyId);
         }
 
-        const response = await fetch(`/lobby/${lobbyId}/results`);
+        const response = await fetch(`/api/lobby/${lobbyId}/results`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch results: ${response.status}`);
