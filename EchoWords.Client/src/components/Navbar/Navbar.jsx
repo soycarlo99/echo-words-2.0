@@ -46,7 +46,6 @@ const Navbar = ({ lobbyId, showBackButton = false }) => {
           </Link>
         )}
 
-        {/* Sound settings */}
         <SoundSettings />
 
         {/* Dark mode toggle button */}
